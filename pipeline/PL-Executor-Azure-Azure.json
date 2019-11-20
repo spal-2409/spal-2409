@@ -1,6 +1,7 @@
 {
 	"name": "PL-Executor-Azure-Azure",
 	"properties": {
+		"description": "from azure to azure",
 		"activities": [
 			{
 				"name": "Loop-Tables-Seq",
