@@ -1,0 +1,23 @@
+{
+	"name": "DSDBSinkGeneral",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LinkedServiceTargetDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"SinkTableName": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"typeProperties": {
+			"tableName": {
+				"value": "@{dataset().SinkTableName}",
+				"type": "Expression"
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

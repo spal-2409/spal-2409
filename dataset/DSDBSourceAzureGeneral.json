@@ -1,0 +1,20 @@
+{
+	"name": "DSDBSourceAzureGeneral",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LinkedServiceSourceAzureDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"DBName": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"typeProperties": {
+			"tableName": "dummy"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

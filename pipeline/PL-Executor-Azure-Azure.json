@@ -1,0 +1,263 @@
+{
+	"name": "PL-Executor-Azure-Azure",
+	"properties": {
+		"activities": [
+			{
+				"name": "Loop-Tables-Seq",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "LU-GetTableList-Seq",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LU-GetTableList-Seq').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "EP-Framework-Seq",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "PL-Framework-FromAzure-ToAzure",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"SourceSystem": {
+										"value": "@item().SourceSystem",
+										"type": "Expression"
+									},
+									"SourceSchema": {
+										"value": "@item().SourceSchema",
+										"type": "Expression"
+									},
+									"SourceTable": {
+										"value": "@item().SourceTable",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "LU-GetTableList-Seq",
+				"description": "Get the list of tables to load from the Metadata table",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT * FROM UTIL.[vDataLoadMetaData_FromTable_ToTable] WHERE SourceSystem = '@{pipeline().parameters.SourceSystem}' AND RunParallel = 0 ORDER BY RunSequence\n",
+							"type": "Expression"
+						}
+					},
+					"dataset": {
+						"referenceName": "DSDataLoadMetadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "LU-GetTableList-Pll-B1",
+				"description": "Get the list of tables to load from the Metadata table",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Loop-Tables-Seq",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT * FROM UTIL.[vDataLoadMetaData_FromTable_ToTable] WHERE SourceSystem = '@{pipeline().parameters.SourceSystem}' AND RunParallel = 1 AND BatchSequence = 1",
+							"type": "Expression"
+						}
+					},
+					"dataset": {
+						"referenceName": "DSDataLoadMetadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Loop-Tables-Seq-Pll-B1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "LU-GetTableList-Pll-B1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LU-GetTableList-Pll-B1').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "EP-Framework-Pll-B1",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "PL-Framework-FromAzure-ToAzure",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"SourceSystem": {
+										"value": "@item().SourceSystem",
+										"type": "Expression"
+									},
+									"SourceSchema": {
+										"value": "@item().SourceSchema",
+										"type": "Expression"
+									},
+									"SourceTable": {
+										"value": "@item().SourceTable",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "LU-GetTableList-Pll-B2",
+				"description": "Get the list of tables to load from the Metadata table",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Loop-Tables-Seq-Pll-B1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlSource",
+						"sqlReaderQuery": {
+							"value": "SELECT * FROM UTIL.[vDataLoadMetaData_FromTable_ToTable] WHERE SourceSystem = '@{pipeline().parameters.SourceSystem}' AND RunParallel = 1 AND BatchSequence > 1",
+							"type": "Expression"
+						}
+					},
+					"dataset": {
+						"referenceName": "DSDataLoadMetadata",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Loop-Tables-Seq-Pll-B2",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "LU-GetTableList-Pll-B2",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('LU-GetTableList-Pll-B2').output.value",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "EP-Framework-Pll-B2",
+							"type": "ExecutePipeline",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "PL-Framework-FromAzure-ToAzure",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true,
+								"parameters": {
+									"SourceSystem": {
+										"value": "@item().SourceSystem",
+										"type": "Expression"
+									},
+									"SourceSchema": {
+										"value": "@item().SourceSchema",
+										"type": "Expression"
+									},
+									"SourceTable": {
+										"value": "@item().SourceTable",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"SourceSystem": {
+				"type": "String",
+				"defaultValue": "Src-Azure"
+			}
+		},
+		"folder": {
+			"name": "Executor"
+		},
+		"annotations": []
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

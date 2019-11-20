@@ -1,0 +1,22 @@
+{
+	"name": "LinkedServiceSourceOnPremDatabase",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "LinkedServiceAzureKeyVault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "db-source-onprem-connstr"
+			}
+		},
+		"connectVia": {
+			"referenceName": "OnPremRuntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}

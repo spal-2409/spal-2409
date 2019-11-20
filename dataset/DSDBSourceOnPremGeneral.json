@@ -1,0 +1,21 @@
+{
+	"name": "DSDBSourceOnPremGeneral",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LinkedServiceSourceOnPremDatabase",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"DBName": {
+				"type": "String",
+				"defaultValue": "PRG_DEV"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"typeProperties": {
+			"tableName": "dummyName"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
