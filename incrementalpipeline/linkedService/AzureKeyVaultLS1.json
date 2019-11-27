@@ -6,5 +6,6 @@
 		"typeProperties": {
 			"baseUrl": "https://testkeyvault2409.vault.azure.net/"
 		}
-	}
+	},
+	"type": "Microsoft.DataFactory/factories/linkedservices"
 }
