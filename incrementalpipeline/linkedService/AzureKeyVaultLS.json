@@ -1,0 +1,10 @@
+{
+	"name": "AzureKeyVaultLS",
+	"properties": {
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://vlsp2409kv.vault.azure.net/"
+		}
+	}
+}
